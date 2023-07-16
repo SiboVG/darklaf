@@ -64,7 +64,7 @@ public class DarkButtonBorder implements Border, UIResource, VisualPaddingProvid
         altArc = UIManager.getInt("Button.altArc");
         minimumArc = UIManager.getInt("Button.minimumArc");
         borderSize = UIManager.getInt("Button.borderThickness");
-        shadowSize = UIManager.getInt("Button.shadowHeight") + 20;
+        shadowSize = UIManager.getInt("Button.shadowHeight");
     }
 
     public static boolean showDropShadow(final Component c) {
