@@ -56,34 +56,10 @@ import com.intellij.util.ui.UIUtilities;
 
 public final class SwingUtil {
 
-    private static final Logger LOGGER = LogUtil.getLogger(SwingUtil.class);
     private static final PaintSynthStyle PAINT_STYLE = new PaintSynthStyle();
     private static final SynthGraphicsUtils SYNTH_GRAPHICS_UTILS = new SynthGraphicsUtils();
 
     private SwingUtil() {}
-
-    private static boolean swingInteropAvailable;
-    private static Class<?> swingInteropClass;
-    private static final LazyValue<MethodHandle> grabMethod = new LazyValue<>(
-            Lambdas.orDefault(() -> MethodHandles.lookup().findStatic(swingInteropClass, "grab",
-                    MethodType.methodType(void.class, Toolkit.class, Window.class)), null));
-    private static final LazyValue<MethodHandle> ungrabMethod = new LazyValue<>(
-            Lambdas.orDefault(() -> MethodHandles.lookup().findStatic(swingInteropClass, "ungrab",
-                    MethodType.methodType(void.class, Toolkit.class, Window.class)), null));
-
-    static {
-        try {
-            swingInteropClass = Class.forName("jdk.swing.interop.SwingInterOpUtils");
-            swingInteropAvailable = true;
-        } catch (Throwable e) {
-            swingInteropAvailable = false;
-        }
-        LOGGER.fine("SwingInterOpUtils available: " + swingInteropAvailable);
-    }
-
-    public static boolean isSunToolkit(final Toolkit toolkit) {
-        return toolkit != null && isInstanceOf(toolkit.getClass(), "sun.awt.SunToolkit");
-    }
 
     public static boolean isUngrabEvent(final AWTEvent event) {
         return event != null && isInstanceOf(event.getClass(), "sun.awt.UngrabEvent");
@@ -96,34 +72,6 @@ public final class SwingUtil {
             if (c.getName().equals(type)) return true;
         }
         return isInstanceOf(cls.getSuperclass(), type);
-    }
-
-    public static void grab(final Toolkit toolkit, final Window window) {
-        if (swingInteropAvailable) {
-            try {
-                grabMethod.get().invokeExact(toolkit, window);
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            if (toolkit instanceof sun.awt.SunToolkit) {
-                ((sun.awt.SunToolkit) toolkit).grab(window);
-            }
-        }
-    }
-
-    public static void ungrab(final Toolkit toolkit, final Window window) {
-        if (swingInteropAvailable) {
-            try {
-                ungrabMethod.get().invokeExact(toolkit, window);
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            if (toolkit instanceof sun.awt.SunToolkit) {
-                ((sun.awt.SunToolkit) toolkit).ungrab(window);
-            }
-        }
     }
 
     public static void drawStringUnderlineCharAt(final JComponent c, final Graphics g,

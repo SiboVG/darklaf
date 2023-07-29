@@ -70,12 +70,8 @@ public class MouseGrabber implements ChangeListener, AWTEventListener, Component
         }
         grabbedWindow = DarkUIUtil.getWindow(invoker);
         if (grabbedWindow != null) {
-            if (SwingUtil.isSunToolkit(tk)) {
-                SwingUtil.grab(tk, grabbedWindow);
-            } else {
-                grabbedWindow.addComponentListener(this);
-                grabbedWindow.addWindowListener(this);
-            }
+            grabbedWindow.addComponentListener(this);
+            grabbedWindow.addWindowListener(this);
         }
     }
 
@@ -91,14 +87,9 @@ public class MouseGrabber implements ChangeListener, AWTEventListener, Component
     }
 
     protected void realUngrabWindow() {
-        Toolkit tk = Toolkit.getDefaultToolkit();
         if (grabbedWindow != null) {
-            if (SwingUtil.isSunToolkit(tk)) {
-                SwingUtil.ungrab(tk, grabbedWindow);
-            } else {
-                grabbedWindow.removeComponentListener(this);
-                grabbedWindow.removeWindowListener(this);
-            }
+            grabbedWindow.removeComponentListener(this);
+            grabbedWindow.removeWindowListener(this);
             grabbedWindow = null;
         }
     }
